@@ -27,41 +27,42 @@ public class UserInterface {
     }
 
     private boolean RouteInterface(){
+         System.out.print("메뉴를 선택해 주세요 : ");
+            int menuNum = scanner.nextInt();
+            scanner.nextLine();
 
-        System.out.print("메뉴를 선택해 주세요 : ");
-        int menuNum = scanner.nextInt();
-        scanner.nextLine();
+            switch (menuNum) {
+                case 1:
+                    this.addAcountMenu();
+                    break;
+                case 2:
+                    this.depositMenu();
+                    break;
+                case 3:
+                    this.withdrawMenu();
+                    break;
+                case 4:
+                    this.checkBalanceMenu();
+                    break;
+                case 5:
+                    this.manageAccountMenu();
+                    break;
+                case 6:
+                    this.searchAccountMenu();
+                    break;
+                case 7:
+                    listTransactionMenu();
+                    break;
+                case 8:
+                    listAccountMenu();
+                    break;
+                case 9:
+                    System.out.println("출금시스템이 종료되었습니다.");
+                    return false;
+            }
 
-        switch (menuNum){
-            case 1:
-                this.addAcountMenu();
-                break;
-            case 2:
-                this.depositMenu();
-                break;
-            case 3:
-                this.withdrawMenu();
-                break;
-            case 4:
-                this.checkBalanceMenu();
-                break;
-            case 5:
-                this.manageAccountMenu();
-                break;
-            case 6:
-                this.searchAccountMenu();
-                break;
-            case 7:
-                listTransactionMenu();
-                break;
-            case 8:
-                listAccountMenu();
-                break;
-            case 9:
-                System.out.println("출금시스템이 종료되었습니다.");
-                return false;
-        }
-        return true;
+            return true;
+
     }
 
     private void MainMenu() {
