@@ -293,5 +293,16 @@ public class BankService {
         }
 
     }
+    
+    /**
+     * 계좌번호 중복검사
+     * @param bankAccountNumber
+     * @return
+     */
+    public boolean isExistBankAccountNumber(String bankAccountNumber){
+        if(this.bankAccountRepository.searchAccountsByNumber(bankAccountNumber) == null)
+            return false;
+        return true;
+    }
 
 }
