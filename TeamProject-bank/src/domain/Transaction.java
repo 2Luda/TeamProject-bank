@@ -16,6 +16,7 @@ public class Transaction {
     }
 
 
+    @Override
     public String toString() {
 
         String value = "";
