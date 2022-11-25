@@ -223,7 +223,6 @@ public class UserInterface {
         System.out.println("조회 결과");
         bankService.listAllOfTransactions();
 
-
         System.out.println();
         System.out.println("계속하시려면 아무 키를 입력해주세요");
         scanner.nextLine();
@@ -232,7 +231,6 @@ public class UserInterface {
         System.out.println("[모든 계좌정보 조회]");
         System.out.println("조회 결과");
         bankService.listAllOfAccounts();
-
 
         System.out.println();
         System.out.println("계속하시려면 아무 키를 입력해주세요");
