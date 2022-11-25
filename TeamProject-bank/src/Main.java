@@ -7,6 +7,9 @@ import java.util.Scanner;
 public class Main {
     public static void main(String[] args) {
         BankService kbBankService = new BankService("국민은행", 500);
+        
+
+
         UserInterface UI = new UserInterface();
         Scanner scan = new Scanner(System.in);
 
@@ -40,26 +43,26 @@ public class Main {
                     String depositNumber = scan.nextLine();
                     System.out.println("입금하실 금액을 적어주세요 :");
                     int depositBalance = scan.nextInt();
-                    String depositPassword = "";
-                    flag = kbBankService.depositAndWithdrawMoney(depositNumber, depositBalance, depositPassword);
-                    if (flag == true)
+
+                    if(kbBankService.depositMoney(depositNumber, depositBalance));
                         System.out.println("입금이 완료되었습니다.");
-                    break;
+
+                        break;
                 case 3:
                     System.out.println("출금하실 계좌번호를 입력해 주세요. ");
                     String withdrawNumber = scan.nextLine();
+
                     System.out.println("출금하실 금액을 적어주세요 (수수료는 " + kbBankService.getCommission() + "원 입니다.) :");
                     int withdrawBalance = scan.nextInt();
-                    if (withdrawBalance > 0) {
-                        withdrawBalance = withdrawBalance * -1;
-                    }
                     scan.nextLine();
+
                     System.out.println("비밀번호를 입력해주세요 :");
                     String withdrawPassword = scan.nextLine();
-                    flag = kbBankService.depositAndWithdrawMoney(withdrawNumber, withdrawBalance, withdrawPassword);
-                    if (flag == true)
+
+                    if(kbBankService.withdrawMoeny(withdrawNumber, withdrawBalance, withdrawPassword))
                         System.out.println("출금이 완료되었습니다.");
-                    break;
+
+                        break;
                 case 4:
                     System.out.println("계좌 수정은 1번, 계좌 삭제는 2번, 계좌 잔고 확인을 하고싶으시면 3번을 눌러주세요.");
                     int Choice = scan.nextInt();
@@ -71,17 +74,17 @@ public class Main {
                         String modifiedAccountNumber = scan.nextLine();
                         System.out.println("비밀번호를 입력해주세요: ");
                         String modifiedPassword = scan.nextLine();
-                        flag = kbBankService.changeAccount(modifiedname, modifiedAccountNumber, modifiedPassword);
-                        if (flag) {
+
+                        if(kbBankService.modifyAccount(modifiedname, modifiedAccountNumber, modifiedPassword));
                             System.out.println("수정이 완료되었습니다.");
-                        }
+
                     } else if (Choice == 2) {
                         System.out.println("삭제하실 계좌번호를 입력해주세요. :");
                         String deleteAccount = scan.nextLine();
                         System.out.println("비밀번호를 입력해주세요: ");
                         String deletePassword = scan.nextLine();
-                        flag = kbBankService.deleteAccount(deleteAccount, deletePassword);
-                        if (flag == true)
+
+                        if(kbBankService.deleteAccount(deleteAccount, deletePassword));
                             System.out.println("삭제되었습니다. ");
                     }
                     if (Choice == 3) {

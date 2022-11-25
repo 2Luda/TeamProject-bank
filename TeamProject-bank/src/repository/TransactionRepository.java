@@ -3,33 +3,49 @@ package repository;
 
 //거래내역
 
+import domain.Transaction;
+
 import java.time.*;
-public class TransactionRepository{
+import java.util.ArrayList;
+import java.util.Iterator;
 
+public class TransactionRepository {
 
-    private String nameOfBank;
-    private String accountNumber;
-    private long amountOfTransaction;
-    private LocalDateTime transactionTime;
-
-    public TransactionRepository(String nameOfBank, String accountNumber, long amountOfTransaction, LocalDateTime transactionTime){
-        this.nameOfBank = nameOfBank;
-        this.accountNumber = accountNumber;
-        this.amountOfTransaction = amountOfTransaction;
-        this.transactionTime = transactionTime;
+    //싱글톤
+    private static TransactionRepository transactionRepository;
+    private TransactionRepository() {
+        transactionLists = new ArrayList<>();
+    }
+    public static TransactionRepository getInstance() {
+        if (transactionRepository == null) {
+            transactionRepository = new TransactionRepository();
+        }
+        return transactionRepository;
     }
 
-    public String toString() {
+    private ArrayList<Transaction> transactionLists;
 
-        String to_string = "";
+    public void addTransaction(String nameOfBank, String accountNumber, long amountOfTransaction, LocalDateTime transactionTime) {
+        Transaction transaction = new Transaction(
+                nameOfBank,
+                accountNumber,
+                amountOfTransaction,
+                transactionTime
+        );
 
-        to_string += "-----------------------------\n";
-        to_string += "은행명 : " + this.nameOfBank + "\n";
-        to_string += "계좌번호 : " + this.accountNumber + "\n";
-        to_string += "입출금내역 : " + this.amountOfTransaction + "\n";
-        to_string += "거래일시 : " + this.transactionTime.toString() + "\n";
+        this.transactionLists.add(transaction);
+    }
 
-        return to_string;
+    public ArrayList<Transaction> getListOfTransaction() {
+
+        ArrayList<Transaction> value = new ArrayList<>();
+        Iterator<Transaction> iteratorOfTransaction = this.transactionLists.iterator();
+
+        while (iteratorOfTransaction.hasNext()) {
+            Transaction transaction = iteratorOfTransaction.next();
+            value.add(transaction);
+        }
+        return value;
     }
 }
 
