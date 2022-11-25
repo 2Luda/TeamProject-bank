@@ -27,40 +27,46 @@ public class UserInterface {
     }
 
     private boolean RouteInterface(){
-         System.out.print("메뉴를 선택해 주세요 : ");
-            int menuNum = scanner.nextInt();
+        try {
+            System.out.print("메뉴를 선택해 주세요 : ");
+            String menuNum = scanner.next();
             scanner.nextLine();
 
+            if (!regEx.checkMenuRegEx(menuNum))
+                throw new IllegalRegexExpressionException("올바른 메뉴 형식이 아닙니다.");
+
             switch (menuNum) {
-                case 1:
+                case "1":
                     this.addAcountMenu();
                     break;
-                case 2:
+                case "2":
                     this.depositMenu();
                     break;
-                case 3:
+                case "3":
                     this.withdrawMenu();
                     break;
-                case 4:
+                case "4":
                     this.checkBalanceMenu();
                     break;
-                case 5:
+                case "5":
                     this.manageAccountMenu();
                     break;
-                case 6:
+                case "6":
                     this.searchAccountMenu();
                     break;
-                case 7:
+                case "7":
                     listTransactionMenu();
                     break;
-                case 8:
+                case "8":
                     listAccountMenu();
                     break;
-                case 9:
+                case "9":
                     System.out.println("출금시스템이 종료되었습니다.");
                     return false;
             }
-
+        }catch (IllegalRegexExpressionException e){
+            System.out.println(e.getMessage());
+        }
             return true;
 
     }
