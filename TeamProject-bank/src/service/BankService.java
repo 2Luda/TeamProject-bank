@@ -90,7 +90,7 @@ public class BankService {
 
             return this.bankAccountRepository.deleteAccount(bankAccountNumber);
 
-        } catch (Exception e) {
+        } catch (NoAccountException e) {
             System.out.println(e.getMessage());
             return false;
         }
@@ -128,7 +128,7 @@ public class BankService {
             return true;
 
         }
-        catch (Exception e){
+        catch (Exception e){ //일단은 모든 exception 받기
             System.out.println(e.getMessage());
             return false;
         }
@@ -171,7 +171,7 @@ public class BankService {
                     date);
 
             return true;
-        }catch (Exception e) {
+        }catch (Exception e) { //일단은 모든 exception 받기
             System.out.println(e.getMessage());
             return false;
         }
@@ -197,7 +197,7 @@ public class BankService {
                 throw new NoAccountException("패스워드가 일치하지 않습니다");
 
             return account.getBankBalance();
-        } catch (NoAccountException e) {
+        } catch (NoAccountException e) { //일단은 모든 exception 받기
             System.out.println(e.getMessage());
             return -1;
         }
@@ -215,12 +215,21 @@ public class BankService {
      */
     public void searchAccountByName(String name) {
 
-        ArrayList<BankAccount> listOfAccount = this.bankAccountRepository.searchAccountsByName(name);
+        try {
+            ArrayList<BankAccount> listOfAccount = this.bankAccountRepository.searchAccountsByName(name);
 
-        Iterator<BankAccount> iteratorOfAccount = listOfAccount.iterator();
 
-        while(iteratorOfAccount.hasNext()){
-            System.out.println(iteratorOfAccount.next().toString());
+            if (listOfAccount.size() == 0)
+                throw new NoAccountException("해당 이름으로 조회된 계좌가 존재하지 않습니다.");
+
+            Iterator<BankAccount> iteratorOfAccount = listOfAccount.iterator();
+
+            while (iteratorOfAccount.hasNext()) {
+                System.out.println(iteratorOfAccount.next().toString());
+            }
+        }
+        catch (NoAccountException e){
+            System.out.println(e.getMessage());
         }
 
 
@@ -240,7 +249,7 @@ public class BankService {
 
             System.out.println(bankAccount.toString());
         }
-        catch (Exception e){
+        catch (Exception e){ //일단은 모든 exception 받기
             System.out.println(e.getMessage());
         }
     }
