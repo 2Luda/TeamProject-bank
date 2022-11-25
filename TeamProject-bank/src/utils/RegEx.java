@@ -23,5 +23,4 @@ public class RegEx {
     public boolean checkAccountRegEx(String accountNumber) {
         return Pattern.matches("^\\d{3}-\\d{4}-\\d{4}$", accountNumber );
     }
-
 }
