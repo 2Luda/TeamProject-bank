@@ -16,6 +16,7 @@ public class TransactionRepository {
     private TransactionRepository() {
         transactionLists = new ArrayList<>();
     }
+
     public static TransactionRepository getInstance() {
         if (transactionRepository == null) {
             transactionRepository = new TransactionRepository();
@@ -40,7 +41,6 @@ public class TransactionRepository {
 
         ArrayList<Transaction> value = new ArrayList<>();
         Iterator<Transaction> iteratorOfTransaction = this.transactionLists.iterator();
-
         while (iteratorOfTransaction.hasNext()) {
             Transaction transaction = iteratorOfTransaction.next();
             value.add(transaction);

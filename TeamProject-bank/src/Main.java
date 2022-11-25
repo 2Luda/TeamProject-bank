@@ -1,19 +1,15 @@
-
 import service.BankService;
 import presentation.UserInterface;
+
+import java.math.BigDecimal;
 
 public class Main {
     public static void main(String[] args) {
 
-        BankService kbBankService = new BankService("국민은행", 500);
+        BankService kbBankService = new BankService("국민은행", 500, BigDecimal.valueOf(0.195));
         initAccount(kbBankService);  //init with test data
-
         UserInterface UI = new UserInterface(kbBankService);
-
         while(UI.run());
-
-
-
     }
 
     private static void initAccount(BankService kbBankService) {
@@ -25,8 +21,4 @@ public class Main {
         for (int i = 0; i < bankAccountNumber.length; i++)
             kbBankService.addAccount(bankOwnerName[i], bankAccountNumber[i], bankBalance[i], bankPassword[i]);
     }
-
-
-
-
 }
