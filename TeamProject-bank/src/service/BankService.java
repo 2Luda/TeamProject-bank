@@ -2,13 +2,15 @@ package service;
 
 import domain.BankAccount;
 import domain.Transaction;
-import exceptions.IllegalRegexExpressionException;
-import exceptions.NoAccountException;
-import exceptions.NotEnoughMoneyException;
 import repository.BankAccountRepository;
 import repository.TransactionRepository;
 
-import java.rmi.server.ExportException;
+
+import exceptions.IllegalRegexExpressionException;
+import exceptions.NoAccountException;
+import exceptions.NotEnoughMoneyException;
+
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -49,25 +51,24 @@ public class BankService {
     /**
      * 계좌 수정 메소드
      *
-     * @param bankOwnerName     (String)
-     * @param bankAccountNumber (String)
-     * @param password          (String)
+     * @param bankAccountNumber     (String)
+     * @param currentPassword (String)
+     * @param nextPassowrd          (String)
      */
-    public boolean modifyAccount(String bankOwnerName, String bankAccountNumber, String password) {
+    public boolean changePassword(String bankAccountNumber, String currentPassword, String nextPassowrd) {
 
         try {
             BankAccount account = this.bankAccountRepository.searchAccountsByNumber(bankAccountNumber);
 
             if (account == null)
                 throw new NoAccountException();
-            if (account.checkPassword(password) == false)
+            if (account.checkPassword(currentPassword) == false)
                 throw new NoAccountException("비밀번호가 일치하지 않습니다");
 
-            return bankAccountRepository.modifyAccount(this.bankName, bankOwnerName,bankAccountNumber);
+            return bankAccountRepository.modifyAccount(bankAccountNumber,nextPassowrd);
 
         } catch (NoAccountException e) {
             System.out.println(e.getMessage());
-
             return false;
         }
     }
@@ -144,7 +145,7 @@ public class BankService {
 
         BankAccount bankAccount = this.bankAccountRepository.searchAccountsByNumber(BankAccountNumber);
 
-        long newBankBalance = bankAccount.getBankBalance() - amount - this.commission;
+
 
         try {
             if (bankAccount == null)
@@ -153,11 +154,13 @@ public class BankService {
                 throw new NoAccountException("패스워드가 틀렸습니다.");
             if (amount < 0)
                 throw new IllegalRegexExpressionException("양수로 입력해 주세요.");
-            if (newBankBalance < 0)
-                throw new NotEnoughMoneyException();
 
+
+            long newBankBalance = bankAccount.getBankBalance() - amount - this.commission;
             this.bankAccountRepository.modifyAccount(BankAccountNumber, newBankBalance);
 
+            if (newBankBalance < 0)
+                throw new NotEnoughMoneyException();
 
             //잔고 변동시 트렌젝션 기록
             LocalDateTime date = LocalDateTime.now();
@@ -190,7 +193,7 @@ public class BankService {
 
             if (account == null)
                 throw new NoAccountException("계좌가 존재하지 않습니다.");
-            if (account.checkPassword(password))
+            if (account.checkPassword(password) == false)
                 throw new NoAccountException("패스워드가 일치하지 않습니다");
 
             return account.getBankBalance();

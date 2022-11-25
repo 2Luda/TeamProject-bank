@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 
+
 public class BankAccountRepository {
 
 
@@ -61,21 +62,20 @@ public class BankAccountRepository {
 
     /**
      * Account 객체를 해쉬맵에서 수정
-     * @param bankName
-     * @param ownerName
      * @param bankAccountNumber
+     * @param Password
      * @return
      */
-    public boolean modifyAccount(String bankName, String ownerName, String bankAccountNumber){
+    public boolean modifyAccount(String bankAccountNumber, String Password){
 
         BankAccount account = this.bankAccountsList.get(bankAccountNumber);
 
         BankAccount newAccount = new BankAccount(
-                bankName,
-                ownerName,
+                account.getBankName(),
+                account.getBankOwnerName(),
                 account.getBankAccountNumber(),
                 account.getBankBalance(),
-                account.getBankPassword()
+                Password
         );
         this.addAccount(newAccount);
 
