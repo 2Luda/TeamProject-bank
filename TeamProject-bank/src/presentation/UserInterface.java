@@ -122,6 +122,8 @@ public class UserInterface {
             System.out.println(e.getMessage());
         }catch (NumberFormatException e) {
             System.out.println("1회 최대 입금금액은 214748647원 입니다.");
+        }catch (Exception e){
+            System.out.println(e.getMessage());
         }
     }
     private void depositMenu(){
