@@ -2,13 +2,17 @@ package presentation;
 
 
 
+import exceptions.IllegalRegexExpressionException;
 import service.BankService;
+import utils.RegEx;
+
 import java.util.Scanner;
 
 public class UserInterface {
 
     private final BankService bankService;
     private Scanner scanner;
+    private final RegEx regEx = new RegEx();
 
     public UserInterface(BankService bankService) {
         this.bankService = bankService;
@@ -74,150 +78,224 @@ public class UserInterface {
     }
 
     private void addAcountMenu(){
-        System.out.println("");
-        System.out.println("[계좌 생성]");
+        try {
+            System.out.println("");
+            System.out.println("[계좌 생성]");
 
-        System.out.print("고객님의 성명을 입력해주세요 : ");
-        String bankOwnerName = scanner.nextLine();
+            System.out.print("고객님의 성명을 입력해주세요 : ");
+            String bankOwnerName = scanner.nextLine();
 
-        System.out.print("계좌번호를 입력해 주세요 :");
-        String bankAccountNumber = scanner.nextLine();
+            if(!regEx.checkNameRegEx(bankOwnerName))
+                throw new IllegalRegexExpressionException("올바른 이름 형식이 아닙니다.");
 
-        System.out.print("입금하실 금액을 알려주세요 :");
-        long bankBalance = scanner.nextInt();
-        scanner.nextLine();
+            System.out.print("계좌번호를 입력해 주세요 :");
+            String bankAccountNumber = scanner.nextLine();
 
-        System.out.print("비밀번호를 입력해 주세요 : ");
-        String bankPassword = scanner.nextLine();
+            if (!regEx.checkAccountRegEx(bankAccountNumber))
+                throw new IllegalRegexExpressionException("올바른 계좌 형식이 아닙니다.");
 
-        bankService.addAccount(bankOwnerName, bankAccountNumber, bankBalance, bankPassword);
+            System.out.print("입금하실 금액을 알려주세요 :");
+            long bankBalance = scanner.nextInt();
+            scanner.nextLine();
 
-        System.out.println();
-        System.out.println("계속하시려면 아무 키를 입력해주세요");
-        scanner.nextLine();
+            if(!regEx.checkNumberRegEx(bankBalance))
+                throw new IllegalRegexExpressionException("올바른 숫자가 아닙니다.");
+
+            System.out.print("비밀번호를 입력해 주세요 : ");
+            String bankPassword = scanner.nextLine();
+
+            if(!regEx.checkPasswordRegEx(bankPassword))
+                throw  new IllegalRegexExpressionException("올바른 비밀번호 형식이 아닙니다.");
+
+            bankService.addAccount(bankOwnerName, bankAccountNumber, bankBalance, bankPassword);
+
+            System.out.println();
+            System.out.println("계속하시려면 아무 키를 입력해주세요");
+            scanner.nextLine();
+        } catch (IllegalRegexExpressionException e) {
+            System.out.println(e.getMessage());
+        }
     }
     private void depositMenu(){
-        System.out.println("");
-        System.out.println("[입금]");
+        try{
+            System.out.println("");
+            System.out.println("[입금]");
+            System.out.print("입금하실 계좌번호를 알려주세요 :  ");
+            String depositNumber = scanner.nextLine();
 
-        System.out.print("입금하실 계좌번호를 알려주세요 :  ");
-        String depositNumber = scanner.nextLine();
+            if (!regEx.checkAccountRegEx(depositNumber))
+                throw new IllegalRegexExpressionException("올바른 계좌 형식이 아닙니다.");
 
-        System.out.print("입금하실 금액을 적어주세요 :");
-        int depositBalance = scanner.nextInt();
-        scanner.nextLine();
+            System.out.print("입금하실 금액을 적어주세요 :");
+            int depositBalance = scanner.nextInt();
+            scanner.nextLine();
 
-        if(bankService.depositMoney(depositNumber, depositBalance));
-            System.out.println("입금이 완료되었습니다.");
+            if(!regEx.checkNumberRegEx(depositBalance))
+                throw new IllegalRegexExpressionException("올바른 숫자를 입력해주세요.");
 
+            if(bankService.depositMoney(depositNumber, depositBalance))
+                System.out.println("입금이 완료되었습니다.");
 
-        System.out.println();
-        System.out.println("계속하시려면 아무 키를 입력해주세요");
-        scanner.nextLine();
-
+            System.out.println();
+            System.out.println("계속하시려면 아무 키를 입력해주세요");
+            scanner.nextLine();
+        }catch (IllegalRegexExpressionException e) {
+            System.out.println(e.getMessage());
+        }
     }
+
     private void withdrawMenu(){
-        System.out.println("");
-        System.out.println("[출금]");
+        try {
+            System.out.println("");
+            System.out.println("[출금]");
 
-        System.out.print("출금하실 계좌번호를 입력해 주세요. ");
-        String withdrawNumber = scanner.nextLine();
+            System.out.print("출금하실 계좌번호를 입력해 주세요. ");
+            String withdrawNumber = scanner.nextLine();
 
-        System.out.print("출금하실 금액을 적어주세요 (수수료는 " + bankService.getCommission() + "원 입니다.) :");
-        int withdrawBalance = scanner.nextInt();
-        scanner.nextLine();
+            if (!regEx.checkAccountRegEx(withdrawNumber))
+                throw new IllegalRegexExpressionException("올바른 계좌 형식이 아닙니다.");
 
-        System.out.print("비밀번호를 입력해주세요 :");
-        String withdrawPassword = scanner.nextLine();
+            System.out.print("출금하실 금액을 적어주세요 (수수료는 " + bankService.getCommission() + "원 입니다.) :");
+            int withdrawBalance = scanner.nextInt();
+            scanner.nextLine();
 
-        if(bankService.withdrawMoeny(withdrawNumber, withdrawBalance, withdrawPassword))
-            System.out.println("출금이 완료되었습니다.");
+            if(!regEx.checkNumberRegEx(withdrawBalance))
+                throw new IllegalRegexExpressionException("올바른 숫자를 입력해주세요.");
 
-        System.out.println();
-        System.out.println("계속하시려면 아무 키를 입력해주세요");
-        scanner.nextLine();
+            System.out.print("비밀번호를 입력해주세요 :");
+            String withdrawPassword = scanner.nextLine();
 
+            if(!regEx.checkPasswordRegEx(withdrawPassword))
+                throw new IllegalRegexExpressionException("올바른 비밀번호 형식이 아닙니다.");
+
+            if (bankService.withdrawMoeny(withdrawNumber, withdrawBalance, withdrawPassword))
+                System.out.println("출금이 완료되었습니다.");
+
+            System.out.println();
+            System.out.println("계속하시려면 아무 키를 입력해주세요");
+            scanner.nextLine();
+        }catch (IllegalRegexExpressionException e) {
+            System.out.println(e.getMessage());
+        }
     }
     private void checkBalanceMenu() {
-        System.out.println("");
-        System.out.println("[잔고확인]");
-        System.out.print("잔고 확인을 하고 싶은 계좌 번호를 입력해주세요 : ");
-        String bankAccountName = scanner.nextLine();
+        try {
+            System.out.println("");
+            System.out.println("[잔고확인]");
+            System.out.print("잔고 확인을 하고 싶은 계좌 번호를 입력해주세요 : ");
+            String bankAccountName = scanner.nextLine();
 
-        System.out.print("비밀번호를 입력해주세요: ");
-        String bankAccountPassword = scanner.nextLine();
-
-        long bankMoney = bankService.getAccountBalance(bankAccountName, bankAccountPassword);
-        if (bankMoney > 0) {
-            System.out.println("현재 잔액 :" + bankMoney);
-        }
-
-        System.out.println();
-        System.out.println("계속하시려면 아무 키를 입력해주세요");
-        scanner.nextLine();
-    }
-    private void manageAccountMenu(){
-        System.out.println("");
-        System.out.println("[계좌관리]");
-        System.out.println("비밀번호 수정은 1번, 계좌 삭제는 2번을 눌러주세요");
-        
-        int Choice = scanner.nextInt();
-        scanner.nextLine();
-        
-        if (Choice == 1) {
-            System.out.print("계좌번호를 입력해주세요 : ");
-            String modifiedAccountNumber = scanner.nextLine();
-
-            System.out.print("현재 비밀번호를 입력해주세요");
-            String currentPassword = scanner.nextLine();
-
-            System.out.print("변경할 비밀번호를 입력해주세요 ");
-            String nextPassword = scanner.nextLine();
-
-            if(bankService.changePassword(modifiedAccountNumber,currentPassword,nextPassword))
-                System.out.println("수정이 완료되었습니다.");
-
-        }
-        else if (Choice == 2) {
-            System.out.print("삭제하실 계좌번호를 입력해주세요. :");
-            String deleteAccount = scanner.nextLine();
+            if (!regEx.checkAccountRegEx(bankAccountName))
+                throw new IllegalRegexExpressionException("올바른 계좌 형식이 아닙니다.");
 
             System.out.print("비밀번호를 입력해주세요: ");
-            String deletePassword = scanner.nextLine();
+            String bankAccountPassword = scanner.nextLine();
 
-            if(bankService.deleteAccount(deleteAccount, deletePassword))
-            System.out.println("삭제되었습니다. ");
+            if(!regEx.checkPasswordRegEx(bankAccountPassword))
+                throw new IllegalRegexExpressionException("올바른 비밀번호 형식이 아닙니다.");
+
+            long bankMoney = bankService.getAccountBalance(bankAccountName, bankAccountPassword);
+            if (bankMoney > 0) {
+                System.out.println("현재 잔액 :" + bankMoney);
+            }
+
+            System.out.println();
+            System.out.println("계속하시려면 아무 키를 입력해주세요");
+            scanner.nextLine();
+        } catch (IllegalRegexExpressionException e) {
+            System.out.println(e.getMessage());
         }
-
-        System.out.println();
-        System.out.println("계속하시려면 아무 키를 입력해주세요");
-        scanner.nextLine();
-
     }
+    private void manageAccountMenu(){
+        try {
+            System.out.println("");
+            System.out.println("[계좌관리]");
+            System.out.println("비밀번호 수정은 1번, 계좌 삭제는 2번을 눌러주세요");
+
+            int Choice = scanner.nextInt();
+            scanner.nextLine();
+
+            if (Choice == 1) {
+                System.out.print("계좌번호를 입력해주세요 : ");
+                String modifiedAccountNumber = scanner.nextLine();
+
+                if (!regEx.checkAccountRegEx(modifiedAccountNumber))
+                    throw new IllegalRegexExpressionException("올바른 계좌 형식이 아닙니다.");
+
+                System.out.print("현재 비밀번호를 입력해주세요");
+                String currentPassword = scanner.nextLine();
+
+                if(!regEx.checkPasswordRegEx(currentPassword))
+                    throw new IllegalRegexExpressionException("올바른 비밀번호 형식이 아닙니다.");
+
+                System.out.print("변경할 비밀번호를 입력해주세요 ");
+                String nextPassword = scanner.nextLine();
+
+                if(!regEx.checkPasswordRegEx(nextPassword))
+                    throw new IllegalRegexExpressionException("올바른 비밀번호 형식이 아닙니다.");
+
+                if (bankService.changePassword(modifiedAccountNumber, currentPassword, nextPassword))
+                    System.out.println("수정이 완료되었습니다.");
+
+            } else if (Choice == 2) {
+                System.out.print("삭제하실 계좌번호를 입력해주세요. :");
+                String deleteAccount = scanner.nextLine();
+
+                if (!regEx.checkAccountRegEx(deleteAccount))
+                    throw new IllegalRegexExpressionException("올바른 계좌 형식이 아닙니다.");
+
+                System.out.print("비밀번호를 입력해주세요: ");
+                String deletePassword = scanner.nextLine();
+
+                if(!regEx.checkPasswordRegEx(deletePassword))
+                    throw new IllegalRegexExpressionException("올바른 비밀번호 형식이 아닙니다.");
+
+                if (bankService.deleteAccount(deleteAccount, deletePassword))
+                    System.out.println("삭제되었습니다. ");
+            }
+
+            System.out.println();
+            System.out.println("계속하시려면 아무 키를 입력해주세요");
+            scanner.nextLine();
+        }catch ( IllegalRegexExpressionException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
     private void searchAccountMenu(){
-        System.out.println("");
-        System.out.println("[계좌 조회]");
-        System.out.println("이름으로 계좌 조회를 하고싶으시면 1번, 계좌 번호로 계좌 조회를 하고싶으시면 2번을 눌러주세요.");
-        int searchChoice = scanner.nextInt();
-        scanner.nextLine();
+        try {
+            System.out.println("");
+            System.out.println("[계좌 조회]");
+            System.out.println("이름으로 계좌 조회를 하고싶으시면 1번, 계좌 번호로 계좌 조회를 하고싶으시면 2번을 눌러주세요.");
+            int searchChoice = scanner.nextInt();
+            scanner.nextLine();
 
 
-        if (searchChoice == 1) {
-            System.out.print("이름을 입력해주세요 : ");
-            String nameSearch = scanner.nextLine();
-            System.out.print("조회 결과: ");
-            bankService.searchAccountByName(nameSearch);
+            if (searchChoice == 1) {
+                System.out.print("이름을 입력해주세요 : ");
+                String nameSearch = scanner.nextLine();
+
+                if(!regEx.checkNameRegEx(nameSearch))
+                    throw new IllegalRegexExpressionException("올바른 이름 형식이 아닙니다.");
+
+                System.out.print("조회 결과: ");
+                bankService.searchAccountByName(nameSearch);
+            } else if (searchChoice == 2) {
+                System.out.print("계좌 번호를 입력해주세요 : ");
+                String numberSearch = scanner.nextLine();
+
+                if (!regEx.checkAccountRegEx(numberSearch))
+                    throw new IllegalRegexExpressionException("올바른 계좌 형식이 아닙니다.");
+
+                System.out.print("조회 결과: ");
+                bankService.searchAccountByNumber(numberSearch);
+            }
+            System.out.println();
+            System.out.println("계속하시려면 아무 키를 입력해주세요");
+            scanner.nextLine();
+        }catch (IllegalRegexExpressionException e) {
+            System.out.println(e.getMessage());
         }
-        else if (searchChoice == 2) {
-            System.out.print("계좌 번호를 입력해주세요 : ");
-            String numberSearch = scanner.nextLine();
-            System.out.print("조회 결과: ");
-            bankService.searchAccountByNumber(numberSearch);
-        }
-        System.out.println();
-        System.out.println("계속하시려면 아무 키를 입력해주세요");
-        scanner.nextLine();
-
     }
     private void listTransactionMenu(){
 
