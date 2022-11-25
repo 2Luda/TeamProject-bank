@@ -110,7 +110,6 @@ public class BankService {
 
         return inputAmount+money;
     }
-
     /**
      * 계좌 입금 메소드
      *
@@ -120,18 +119,17 @@ public class BankService {
     public boolean depositMoney(String BankAccountNumber, int amount){
         try {
             BankAccount bankAccount = this.bankAccountRepository.searchAccountsByNumber(BankAccountNumber);
-
-            long newBankBalance = addInterest(bankAccount.getBankBalance()) + amount;
-
-            if (bankAccount == null)
+            long newBankBalance = bankAccount.getBankBalance() + amount; // 기존에 돈  + 들어온 돈
+            if (bankAccount == null) // 만약 기존에 들어온 잔고가 null이면 예외 발생
                 throw new NoAccountException();
-
-            if (amount < 0)
+            if (amount < 0) // 입금하고자 하는 돈이 0원 이하면 예외 발생
                 throw new IllegalRegexExpressionException("양의 정수로 입력해 주세요.");
 
-            this.bankAccountRepository.modifyAccount(BankAccountNumber,newBankBalance);
+            long money = addInterest(amount)+newBankBalance; // 입금금액에 따라 이율 적용 + 기존에 돈+ 들어온 돈
 
+            this.bankAccountRepository.modifyAccount(BankAccountNumber,money);
             LocalDateTime date = LocalDateTime.now();
+
             transactionRepository.addTransaction(
                     this.bankName,
                     BankAccountNumber,
