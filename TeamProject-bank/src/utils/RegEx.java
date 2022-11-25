@@ -4,6 +4,10 @@ import java.util.regex.Pattern;
 
 public class RegEx {
 
+    public boolean checkMenuRegEx(String menuNumber) {
+        return Pattern.matches("\\d{1}", menuNumber);
+    }
+
     public boolean checkPasswordRegEx(String password) {
         return Pattern.matches("\\d{4}", password);
     }
