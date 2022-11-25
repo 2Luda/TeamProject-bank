@@ -11,7 +11,5 @@ public class UserInterface {
         System.out.println(" 6. 거래 내역 조회");
         System.out.println(" 7. 모든 계좌 조회");
         System.out.println(" 8. 나가기");
-
-
     }
 }

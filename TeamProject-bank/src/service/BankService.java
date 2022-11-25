@@ -1,26 +1,39 @@
 package service;
 
+import domain.BankAccount;
+import domain.Transaction;
+import exceptions.IllegalRegexExpressionException;
+import exceptions.NoAccountException;
+import exceptions.NotEnoughMoneyException;
+import repository.BankAccountRepository;
+import repository.TransactionRepository;
+
+import java.rmi.server.ExportException;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Iterator;
 
 //은행서비스
 public class BankService {
 
     private final String bankName;
     private final int commission;
-    private TransactionHistoryService transactionHistoryService;
-    private BankAccountService bankAccountService;
+    private BankAccountRepository bankAccountRepository;
+    private TransactionRepository transactionRepository;
 
 
     public BankService(String bankName, int commission) {
         this.bankName = bankName;
         this.commission = commission;
-        transactionHistoryService = TransactionHistoryService.getInstance();
-        bankAccountService = BankAccountService.getInstance();
+        bankAccountRepository = BankAccountRepository.getInstance();
+        transactionRepository = TransactionRepository.getInstance();
     }
 
     public int getCommission() {
-        return commission;
+        return this.commission;
     }
+    public String getBankName(){return this.bankName;}
+
 
     /**
      * 계좌 등록 메소드
@@ -30,7 +43,7 @@ public class BankService {
      * @param bankBalance       (long)
      */
     public void addAccount(String bankOwnerName, String bankAccountNumber, long bankBalance, String password) {
-        bankAccountService.addAccount(this.bankName, bankOwnerName, bankAccountNumber, bankBalance, password);
+        bankAccountRepository.addAccount(this.bankName, bankOwnerName, bankAccountNumber, bankBalance, password);
     }
 
     /**
@@ -40,14 +53,23 @@ public class BankService {
      * @param bankAccountNumber (String)
      * @param password          (String)
      */
-    public boolean changeAccount(String bankOwnerName, String bankAccountNumber, String password) {
+    public boolean modifyAccount(String bankOwnerName, String bankAccountNumber, String password) {
 
-        boolean flag = bankAccountService.modifyAccount(this.bankName, bankOwnerName, bankAccountNumber, password);
+        try {
+            BankAccount account = this.bankAccountRepository.searchAccountsByNumber(bankAccountNumber);
 
-        if (flag == true)
-            return true;
-        else
+            if (account == null)
+                throw new NoAccountException();
+            if (account.checkPassword(password) == false)
+                throw new NoAccountException("비밀번호가 일치하지 않습니다");
+
+            return bankAccountRepository.modifyAccount(this.bankName, bankOwnerName,bankAccountNumber);
+
+        } catch (NoAccountException e) {
+            System.out.println(e.getMessage());
+
             return false;
+        }
     }
 
     /**
@@ -57,13 +79,102 @@ public class BankService {
      */
     public boolean deleteAccount(String bankAccountNumber, String password) {
 
-        boolean flag = bankAccountService.deleteAccount(bankAccountNumber, password);
-        if (flag == true)
-            return true;
-        else
-            return false;
+        try {
+            BankAccount bankAccount = this.bankAccountRepository.searchAccountsByNumber(bankAccountNumber);
 
+            if (bankAccount == null)
+                throw new NoAccountException();
+            if(bankAccount.checkPassword(password) == false)
+                throw new NoAccountException("패스워드가 틀렸습니다.");
+
+            return this.bankAccountRepository.deleteAccount(bankAccountNumber);
+
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return false;
+        }
     }
+
+
+
+
+    /**
+     * 계좌 입금 메소드
+     *
+     * @param BankAccountNumber (String)
+     * @param amount            (int)
+     */
+    public boolean depositMoney(String BankAccountNumber, int amount){
+        try {
+            BankAccount bankAccount = this.bankAccountRepository.searchAccountsByNumber(BankAccountNumber);
+
+            long newBankBalance = bankAccount.getBankBalance() + amount;
+
+            if (bankAccount == null)
+                throw new NoAccountException();
+
+            if (amount < 0)
+                throw new IllegalRegexExpressionException("양의 정수로 입력해 주세요.");
+
+            this.bankAccountRepository.modifyAccount(BankAccountNumber,newBankBalance);
+
+            LocalDateTime date = LocalDateTime.now();
+            transactionRepository.addTransaction(
+                    this.bankName,
+                    BankAccountNumber,
+                    amount,
+                    date);
+            return true;
+
+        }
+        catch (Exception e){
+            System.out.println(e.getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * 계좌 출금 메소드
+     *
+     * @param BankAccountNumber (String)
+     * @param amount            (int)
+     * @param password          (String)
+     */
+    public boolean withdrawMoeny(String BankAccountNumber, int amount, String password) {
+
+        BankAccount bankAccount = this.bankAccountRepository.searchAccountsByNumber(BankAccountNumber);
+
+        long newBankBalance = bankAccount.getBankBalance() - amount - this.commission;
+
+        try {
+            if (bankAccount == null)
+                throw new NoAccountException();
+            if(bankAccount.checkPassword(password) == false)
+                throw new NoAccountException("패스워드가 틀렸습니다.");
+            if (amount < 0)
+                throw new IllegalRegexExpressionException("양수로 입력해 주세요.");
+            if (newBankBalance < 0)
+                throw new NotEnoughMoneyException();
+
+            this.bankAccountRepository.modifyAccount(BankAccountNumber, newBankBalance);
+
+
+            //잔고 변동시 트렌젝션 기록
+            LocalDateTime date = LocalDateTime.now();
+            transactionRepository.addTransaction(
+                    this.bankName,
+                    BankAccountNumber,
+                    amount*(-1),
+                    date);
+
+            return true;
+        }catch (Exception e) {
+            System.out.println(e.getMessage());
+            return false;
+        }
+    }
+
+    // 기능 6. 송금기능
 
     /**
      * 잔액 조회 메소드
@@ -72,8 +183,27 @@ public class BankService {
      * @param password          (String)
      */
     public long getAccountBalance(String bankAccountNumber, String password) {
-        return bankAccountService.getAccountBalance(bankAccountNumber, password);
+
+        try {
+            BankAccount account = this.bankAccountRepository.searchAccountsByNumber(bankAccountNumber);
+
+
+            if (account == null)
+                throw new NoAccountException("계좌가 존재하지 않습니다.");
+            if (account.checkPassword(password))
+                throw new NoAccountException("패스워드가 일치하지 않습니다");
+
+            return account.getBankBalance();
+        } catch (NoAccountException e) {
+            System.out.println(e.getMessage());
+            return -1;
+        }
     }
+
+
+
+
+
 
     /**
      * 계좌 이름으로 검색 메소드
@@ -81,7 +211,16 @@ public class BankService {
      * @param name (String)
      */
     public void searchAccountByName(String name) {
-        System.out.println(bankAccountService.getStringFromListOfAccount(bankAccountService.getAccountsByName(name)));
+
+        ArrayList<BankAccount> listOfAccount = this.bankAccountRepository.searchAccountsByName(name);
+
+        Iterator<BankAccount> iteratorOfAccount = listOfAccount.iterator();
+
+        while(iteratorOfAccount.hasNext()){
+            System.out.println(iteratorOfAccount.next().toString());
+        }
+
+
     }
 
     /**
@@ -90,55 +229,49 @@ public class BankService {
      * @param bankAccountNumber
      */
     public void searchAccountByNumber(String bankAccountNumber) {
-        if (bankAccountService.getAccountsByNumber(bankAccountNumber) != null)
-            System.out.println(bankAccountService.getAccountsByNumber(bankAccountNumber));
-    }
+        try {
+            BankAccount bankAccount = this.bankAccountRepository.searchAccountsByNumber(bankAccountNumber);
 
-    /**
-     * 계좌 입출금 메소드
-     *
-     * @param BankAccountNumber (String)
-     * @param amount            (int)
-     * @param password          (String)
-     */
-    public boolean depositAndWithdrawMoney(String BankAccountNumber, int amount, String password) {
+            if (bankAccount == null)
+                throw new NoAccountException();
 
-        boolean flag;
-
-        if (amount < 0)
-            amount = amount - this.commission;
-
-        flag = bankAccountService.depositAndWithdraw(BankAccountNumber, amount, password);
-
-        if (flag == true) {
-            //잔고 변동시 트렌젝션 기록
-            LocalDateTime date = LocalDateTime.now();
-            transactionHistoryService.addTransaction(
-                    this.bankName,
-                    BankAccountNumber,
-                    amount,
-                    date);
+            System.out.println(bankAccount.toString());
         }
-
-        return flag;
+        catch (Exception e){
+            System.out.println(e.getMessage());
+        }
     }
 
 
-    // 기능 6. 송금기능
+
+
+
 
 
     /**
      * 모든 계좌 리스트
      */
     public void listAllOfAccounts() {
-        System.out.println(bankAccountService.getListOfAccounts());
+
+        ArrayList<BankAccount> listOfAccounts = this.bankAccountRepository.getListOfAccounts();
+        Iterator<BankAccount> iteratorOfAccounts = listOfAccounts.iterator();
+
+        while(iteratorOfAccounts.hasNext()){
+            System.out.println(iteratorOfAccounts.next().toString());
+        }
     }
 
     /**
      * 모든 거래내역 리스트
      */
     public void listAllOfTransactions() {
-        System.out.println(transactionHistoryService.getListOfTransactions());
+        ArrayList<Transaction> listOfTransaction = this.transactionRepository.getListOfTransaction();
+        Iterator<Transaction> iteratorOfTransaction = listOfTransaction.iterator();
+
+        while(iteratorOfTransaction.hasNext()){
+            System.out.println(iteratorOfTransaction.next().toString());
+        }
+
     }
 
 }
