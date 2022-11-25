@@ -214,8 +214,6 @@ public class BankService {
 
 
 
-
-
     /**
      * 계좌 이름으로 검색 메소드
      *
@@ -292,6 +290,18 @@ public class BankService {
             System.out.println(iteratorOfTransaction.next().toString());
         }
 
+    }
+
+
+    /**
+     * 계좌번호 중복검사
+     * @param bankAccountNumber
+     * @return
+     */
+    public boolean isExistBankAccountNumber(String bankAccountNumber){
+        if(this.bankAccountRepository.searchAccountsByNumber(bankAccountNumber) == null)
+            return false;
+        return true;
     }
 
 }
