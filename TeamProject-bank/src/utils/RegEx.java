@@ -1,27 +1,35 @@
 package utils;
 
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class RegEx {
 
     public boolean checkMenuRegEx(String menuNumber) {
-        return Pattern.matches("\\d{1}", menuNumber);
+        return Pattern.matches(menuNumber,"\\d{1}");
     }
 
     public boolean checkPasswordRegEx(String password) {
-        return Pattern.matches("\\d{4}", password);
+        return Pattern.matches(password, "\\d{4}");
     }
 
     public boolean checkNameRegEx(String name) {
-        return Pattern.matches("^[가-힣]*$", name ) || Pattern.matches("^[a-zA-Z]*$", name );
+        return checkRegEx(name, "^[가-힣]*$") || checkRegEx(name, "^[a-zA-Z]*$");
     }
 
     public boolean checkNumberRegEx(long number) {
-        return  Pattern.matches("^[0-9]*$", String.valueOf(number) );
+        return  checkRegEx(String.valueOf(number), "^[0-9]*$");
     }
 
     public boolean checkAccountRegEx(String accountNumber) {
-        return Pattern.matches("^\\d{3}-\\d{4}-\\d{4}$", accountNumber );
+        return checkRegEx(accountNumber, "^\\d{3}-\\d{4}-\\d{4}$");
     }
 
+    public boolean checkRegEx(String value, String regEx) {
+        Pattern pattern = Pattern.compile(regEx);
+
+        Matcher matcher = pattern.matcher(value);
+
+        return matcher.find();
+    }
 }
