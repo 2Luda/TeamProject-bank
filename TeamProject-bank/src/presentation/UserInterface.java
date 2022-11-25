@@ -95,6 +95,9 @@ public class UserInterface {
 
             if (!regEx.checkAccountRegEx(bankAccountNumber))
                 throw new IllegalRegexExpressionException("올바른 계좌 형식이 아닙니다.");
+            
+            if(bankService.isExistBankAccountNumber(bankAccountNumber) == true)
+                throw new Exception("해당 계좌번호가 이미 존재합니다.");
 
             System.out.print("입금하실 금액을 알려주세요 :");
             String input = scanner.nextLine();
@@ -149,6 +152,8 @@ public class UserInterface {
             System.out.println(e.getMessage());
         }catch (NumberFormatException e){
             System.out.println("1회 최대 입금금액은 214748647원 입니다.");
+        }catch (Exception e){
+            System.out.println(e.getMessage());
         }
     }
 
