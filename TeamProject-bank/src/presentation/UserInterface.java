@@ -58,6 +58,7 @@ public class UserInterface {
         }
         return true;
     }
+
     private void MainMenu() {
         clearScreen();
         System.out.println("[ " + bankService.getBankName() + " 관리 시스템 ]");
@@ -71,6 +72,7 @@ public class UserInterface {
         System.out.println(" 8. 모든 계좌 조회");
         System.out.println(" 9. 나가기");
     }
+
     private void addAcountMenu(){
         System.out.println("");
         System.out.println("[계좌 생성]");
