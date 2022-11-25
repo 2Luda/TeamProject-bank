@@ -6,6 +6,7 @@ import exceptions.IllegalRegexExpressionException;
 import service.BankService;
 import utils.RegEx;
 
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class UserInterface {
@@ -95,8 +96,9 @@ public class UserInterface {
                 throw new IllegalRegexExpressionException("올바른 계좌 형식이 아닙니다.");
 
             System.out.print("입금하실 금액을 알려주세요 :");
-            long bankBalance = scanner.nextInt();
-            scanner.nextLine();
+            String input = scanner.nextLine();
+
+            int bankBalance = Integer.parseInt(input);
 
             if(!regEx.checkNumberRegEx(bankBalance))
                 throw new IllegalRegexExpressionException("올바른 숫자가 아닙니다.");
@@ -114,6 +116,8 @@ public class UserInterface {
             scanner.nextLine();
         } catch (IllegalRegexExpressionException e) {
             System.out.println(e.getMessage());
+        }catch (NumberFormatException e) {
+            System.out.println("1회 최대 입금금액은 214748647원 입니다.");
         }
     }
     private void depositMenu(){
@@ -127,8 +131,9 @@ public class UserInterface {
                 throw new IllegalRegexExpressionException("올바른 계좌 형식이 아닙니다.");
 
             System.out.print("입금하실 금액을 적어주세요 :");
-            int depositBalance = scanner.nextInt();
-            scanner.nextLine();
+            String input = scanner.nextLine();
+
+            int depositBalance = Integer.parseInt(input);
 
             if(!regEx.checkNumberRegEx(depositBalance))
                 throw new IllegalRegexExpressionException("올바른 숫자를 입력해주세요.");
@@ -141,6 +146,8 @@ public class UserInterface {
             scanner.nextLine();
         }catch (IllegalRegexExpressionException e) {
             System.out.println(e.getMessage());
+        }catch (NumberFormatException e){
+            System.out.println("1회 최대 입금금액은 214748647원 입니다.");
         }
     }
 
@@ -156,8 +163,9 @@ public class UserInterface {
                 throw new IllegalRegexExpressionException("올바른 계좌 형식이 아닙니다.");
 
             System.out.print("출금하실 금액을 적어주세요 (수수료는 " + bankService.getCommission() + "원 입니다.) :");
-            int withdrawBalance = scanner.nextInt();
-            scanner.nextLine();
+            String input = scanner.nextLine();
+
+            int withdrawBalance = Integer.parseInt(input);
 
             if(!regEx.checkNumberRegEx(withdrawBalance))
                 throw new IllegalRegexExpressionException("올바른 숫자를 입력해주세요.");
@@ -176,6 +184,8 @@ public class UserInterface {
             scanner.nextLine();
         }catch (IllegalRegexExpressionException e) {
             System.out.println(e.getMessage());
+        }catch (NumberFormatException e) {
+            System.out.println("1회 최대 출금금액은 214748647원 입니다.");
         }
     }
     private void checkBalanceMenu() {
