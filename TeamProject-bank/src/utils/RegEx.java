@@ -6,30 +6,23 @@ import java.util.regex.Pattern;
 public class RegEx {
 
     public boolean checkMenuRegEx(String menuNumber) {
-        return Pattern.matches(menuNumber,"\\d{1}");
+        return Pattern.matches("\\d{1}",menuNumber);
     }
 
     public boolean checkPasswordRegEx(String password) {
-        return Pattern.matches(password, "\\d{4}");
+        return Pattern.matches( "\\d{4}",password);
     }
 
     public boolean checkNameRegEx(String name) {
-        return checkRegEx(name, "^[가-힣]*$") || checkRegEx(name, "^[a-zA-Z]*$");
+        return Pattern.matches("^[가-힣]*$",name) || Pattern.matches("^[a-zA-Z]*$",name);
     }
 
     public boolean checkNumberRegEx(long number) {
-        return  checkRegEx(String.valueOf(number), "^[0-9]*$");
+        return Pattern.matches("^[0-9]*$",String.valueOf(number));
     }
 
     public boolean checkAccountRegEx(String accountNumber) {
-        return checkRegEx(accountNumber, "^\\d{3}-\\d{4}-\\d{4}$");
+        return Pattern.matches("^\\d{3}-\\d{4}-\\d{4}$",accountNumber);
     }
 
-    public boolean checkRegEx(String value, String regEx) {
-        Pattern pattern = Pattern.compile(regEx);
-
-        Matcher matcher = pattern.matcher(value);
-
-        return matcher.find();
-    }
 }
