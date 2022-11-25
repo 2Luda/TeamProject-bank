@@ -11,6 +11,7 @@ import exceptions.NoAccountException;
 import exceptions.NotEnoughMoneyException;
 
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -20,22 +21,28 @@ public class BankService {
 
     private final String bankName;
     private final int commission;
+    private final BigDecimal interestRate;
     private BankAccountRepository bankAccountRepository;
     private TransactionRepository transactionRepository;
 
 
-    public BankService(String bankName, int commission) {
+
+    public BankService(String bankName, int commission, BigDecimal interestRate) {
         this.bankName = bankName;
         this.commission = commission;
+        this.interestRate = interestRate;
         bankAccountRepository = BankAccountRepository.getInstance();
         transactionRepository = TransactionRepository.getInstance();
     }
 
+    public BigDecimal getInterestRate(){
+        return this.interestRate;
+    }
     public int getCommission() {
         return this.commission;
     }
-    public String getBankName(){return this.bankName;}
 
+    public String getBankName(){return this.bankName;}
 
     /**
      * 계좌 등록 메소드
@@ -79,7 +86,6 @@ public class BankService {
      * @param bankAccountNumber (String)
      */
     public boolean deleteAccount(String bankAccountNumber, String password) {
-
         try {
             BankAccount bankAccount = this.bankAccountRepository.searchAccountsByNumber(bankAccountNumber);
 
@@ -96,8 +102,14 @@ public class BankService {
         }
     }
 
+    public long addInterest(long amount){
+        BigDecimal bankRate = this.interestRate; // 이율
+        long inputAmount  = amount; // 들어온 돈
+        BigDecimal addInterest = bankRate.multiply(BigDecimal.valueOf(inputAmount)); // 기존 들어온 돈을 빅데시멀로 바꾸고, 그 값을 기존에 적용된 돈이랑 더함 => 이율이 적용된 돈
+        long money=addInterest.longValue();
 
-
+        return inputAmount+money;
+    }
 
     /**
      * 계좌 입금 메소드
@@ -109,7 +121,7 @@ public class BankService {
         try {
             BankAccount bankAccount = this.bankAccountRepository.searchAccountsByNumber(BankAccountNumber);
 
-            long newBankBalance = bankAccount.getBankBalance() + amount;
+            long newBankBalance = addInterest(bankAccount.getBankBalance()) + amount;
 
             if (bankAccount == null)
                 throw new NoAccountException();
@@ -126,14 +138,12 @@ public class BankService {
                     amount,
                     date);
             return true;
-
         }
         catch (Exception e){ //일단은 모든 exception 받기
             System.out.println(e.getMessage());
             return false;
         }
     }
-
     /**
      * 계좌 출금 메소드
      *
