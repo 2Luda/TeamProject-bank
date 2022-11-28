@@ -1,17 +1,20 @@
 package repository;
 
-
-//거래내역
-
 import domain.Transaction;
 
 import java.time.*;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+/**
+ *  Transaction Repository 클래스
+ *  Transaction doamin 객체인스턴스 저장 및 관리
+ */
+
+
 public class TransactionRepository {
 
-    //싱글톤
+    //region Singletone Pattern
     private static TransactionRepository transactionRepository;
     private TransactionRepository() {
         transactionLists = new ArrayList<>();
@@ -24,8 +27,22 @@ public class TransactionRepository {
         return transactionRepository;
     }
 
+    //endregion
+
+    //region Field
     private ArrayList<Transaction> transactionLists;
 
+    //endregion
+
+    //region Methods
+
+    /**
+     * Transaction 객체 transactionLists에 추가
+     * @param nameOfBank
+     * @param accountNumber
+     * @param amountOfTransaction
+     * @param transactionTime
+     */
     public void addTransaction(String nameOfBank, String accountNumber, long amountOfTransaction, LocalDateTime transactionTime) {
         Transaction transaction = new Transaction(
                 nameOfBank,
@@ -37,6 +54,10 @@ public class TransactionRepository {
         this.transactionLists.add(transaction);
     }
 
+    /**
+     * Transaction 객체 List 리턴
+     * @return
+     */
     public ArrayList<Transaction> getListOfTransaction() {
 
         ArrayList<Transaction> value = new ArrayList<>();
@@ -47,6 +68,8 @@ public class TransactionRepository {
         }
         return value;
     }
+
+    //endregion
 }
 
 
