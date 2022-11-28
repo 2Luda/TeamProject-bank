@@ -12,8 +12,9 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-//은행서비스
 public class BankService{
+
+    //region Fields
 
     private final String bankName;
     private final int commission;
@@ -21,7 +22,10 @@ public class BankService{
     private BankAccountRepository bankAccountRepository;
     private TransactionRepository transactionRepository;
 
+    //endregion
 
+
+    //region Constructor
     public BankService(String bankName, int commission, BigDecimal interestRate) {
         this.bankName = bankName;
         this.commission = commission;
@@ -29,6 +33,11 @@ public class BankService{
         bankAccountRepository = BankAccountRepository.getInstance();
         transactionRepository = TransactionRepository.getInstance();
     }
+
+    //endregion
+
+
+    //region Getters
 
     public BigDecimal getInterestRate(){
         return this.interestRate;
@@ -39,6 +48,11 @@ public class BankService{
 
     public String getBankName(){return this.bankName;}
 
+    //endregion
+
+
+    //region Manage Account Methods
+
     /**
      * 계좌 등록 메소드
      *
@@ -48,6 +62,17 @@ public class BankService{
      */
     public void addAccount(String bankOwnerName, String bankAccountNumber, long bankBalance, String password) {
         bankAccountRepository.addAccount(this.bankName, bankOwnerName, bankAccountNumber, bankBalance, password);
+    }
+
+    /**
+     * 계좌번호 중복검사
+     * @param bankAccountNumber
+     * @return
+     */
+    public boolean isExistBankAccountNumber(String bankAccountNumber){
+        if(this.bankAccountRepository.searchAccountsByNumber(bankAccountNumber) == null)
+            return false;
+        return true;
     }
 
     /**
@@ -96,7 +121,12 @@ public class BankService{
         }
     }
 
-    public long addInterest(long amount){
+    /**
+     * 이율 적용 메소드
+     * @param amount
+     * @return
+     */
+    public long applyInterest(long amount){
 
         return this.interestRate.add(BigDecimal.valueOf(1)) //(1 + 이율)
                 .multiply(BigDecimal.valueOf(amount)) // x 입금금액
@@ -118,7 +148,7 @@ public class BankService{
                 throw new NoAccountException();
 
 
-            long newBankBalance = bankAccount.getBankBalance() + addInterest(amount); // 기존잔액 + 입금금액
+            long newBankBalance = bankAccount.getBankBalance() + applyInterest(amount); // 기존잔액 + 입금금액
 
             if(newBankBalance > max_value)
                 throw new Exception("저축가능한 범위를 넘어섰습니다. 창구에 문의 바랍니다.");
@@ -138,6 +168,7 @@ public class BankService{
             return false;
         }
     }
+
     /**
      * 계좌 출금 메소드
      *
@@ -180,7 +211,6 @@ public class BankService{
         }
     }
 
-    // 기능 6. 송금기능
     /**
      * 잔액 조회 메소드
      *
@@ -204,6 +234,10 @@ public class BankService{
         }
     }
 
+    //endregion
+
+
+    //region Search Account Methods
 
     /**
      * 계좌 이름으로 검색 메소드
@@ -251,11 +285,10 @@ public class BankService{
         }
     }
 
+    //endregion
 
 
-
-
-
+    //region List Account Methods
 
     /**
      * 모든 계좌 리스트
@@ -282,16 +315,7 @@ public class BankService{
         }
 
     }
-    
-    /**
-     * 계좌번호 중복검사
-     * @param bankAccountNumber
-     * @return
-     */
-    public boolean isExistBankAccountNumber(String bankAccountNumber){
-        if(this.bankAccountRepository.searchAccountsByNumber(bankAccountNumber) == null)
-            return false;
-        return true;
-    }
+
+    //endregion
 
 }

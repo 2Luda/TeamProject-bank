@@ -7,9 +7,15 @@ import java.util.HashMap;
 import java.util.Iterator;
 
 
+
+/**
+ *  BankAccount Repository 클래스
+ *  BankAccount doamin 객체인스턴스 저장 및 관리
+ */
 public class BankAccountRepository {
 
-    //싱글톤
+    //region Singletone Pattern
+
     private static BankAccountRepository bankAccountService;
     private BankAccountRepository(){
         bankAccountsList = new HashMap();
@@ -21,7 +27,14 @@ public class BankAccountRepository {
         return bankAccountService;
     }
 
+    //endregion
+
+    //region Fields
     private HashMap<String,BankAccount> bankAccountsList;
+
+    //endregion
+
+    //region Methods
 
     /**
      * Account 객체를 HashMap에 추가
@@ -60,7 +73,7 @@ public class BankAccountRepository {
     }
 
     /**
-     * Account 객체를 해쉬맵에서 수정
+     * Account 계좌정보 수정(비밀번호 수정)
      * @param bankAccountNumber
      * @param Password
      * @return
@@ -82,6 +95,13 @@ public class BankAccountRepository {
 
         return true;
     }
+
+    /**
+     * Account 계좌정보 수정(잔고수정)
+     * @param bankAccountNumber
+     * @param bankBanlance
+     * @return
+     */
     public boolean modifyAccount(String bankAccountNumber, long bankBanlance){
 
             BankAccount account = this.bankAccountsList.get(bankAccountNumber);
@@ -145,14 +165,6 @@ public class BankAccountRepository {
         return value;
     }
 
-
-
-
-
-
-
-
-
-
+    //endregion
 
 }

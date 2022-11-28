@@ -1,14 +1,22 @@
 package domain;
 
+/**
+ * BankAccount 도메인 클래스
+ * BankAccount 객체의 속성 명세
+ */
 public class BankAccount {
 
+
+    //region Fields
     private String bankName;
     private String bankOwnerName;
     private String bankAccountNumber;
     private long bankBalance;
     private String bankPassword;
 
+    //endregion
 
+    //region Constructor
     public BankAccount(String bankName, String bankOwnerName, String bankAccountNumber, long bankBalance, String bankPassword){
         this.bankName = bankName;
         this.bankOwnerName = bankOwnerName;
@@ -17,7 +25,9 @@ public class BankAccount {
         this.bankPassword = bankPassword;
     }
 
+    //endregion
 
+    //region Getter
     public String getBankName() {
         return bankName;
     }
@@ -35,6 +45,9 @@ public class BankAccount {
         return bankPassword;
     }
 
+    //endregions
+
+    //region Methods
     public boolean checkOwnerName(String bankOwnerName){
         if(this.bankOwnerName.compareTo(bankOwnerName) == 0)
             return true;
@@ -47,6 +60,7 @@ public class BankAccount {
         else
             return false;
     }
+
 
     @Override
     public String toString() {
@@ -61,5 +75,7 @@ public class BankAccount {
 
         return value;
     }
+
+    //endregion
 
 }

@@ -1,23 +1,39 @@
 package presentation;
 
-
 import exceptions.IllegalRegexExpressionException;
 import service.BankService;
 import utils.RegEx;
 
 import java.util.Scanner;
 
+
+/**
+ * UserInterface 클래스
+ * UI 출력
+ */
+
 public class UserInterface {
 
+
+
+    //region Fields
     private final BankService bankService;
     private Scanner scanner;
     private final RegEx regEx = new RegEx();
 
+    //endregion
+
+
+
+    //region Constructor
     public UserInterface(BankService bankService) {
         this.bankService = bankService;
         scanner = new Scanner(System.in);
     }
+    //endregion
 
+
+    //region Methods
     public boolean run() {
         MainMenu();
         boolean flag = RouteInterface();
@@ -60,6 +76,7 @@ public class UserInterface {
                     break;
                 case "9":
                     System.out.println("출금시스템이 종료되었습니다.");
+                    scanner.close();
                     return false;
             }
         } catch (IllegalRegexExpressionException e) {
@@ -115,6 +132,7 @@ public class UserInterface {
 
             if (!regEx.checkPasswordRegEx(bankPassword))
                 throw new IllegalRegexExpressionException("올바른 비밀번호 형식이 아닙니다.");
+
             System.out.println("======계좌 생성 완료======");
             bankService.addAccount(bankOwnerName, bankAccountNumber, bankBalance, bankPassword);
 
@@ -163,7 +181,7 @@ public class UserInterface {
 
                 System.out.println();
                 System.out.println("입금 금액은 다음과 같습니다 : " + depositBalance);
-                System.out.println("입금 금액에 이자가 적용된 액수는 다음과 같습니다." + bankService.addInterest(depositBalance));
+                System.out.println("입금 금액에 이자가 적용된 액수는 다음과 같습니다." + bankService.applyInterest(depositBalance));
                 System.out.println();
 
                 if (bankService.depositMoney(depositNumber, depositBalance))
@@ -249,7 +267,6 @@ public class UserInterface {
             System.out.println(e.getMessage());
         }
     }
-
 
     private void manageAccountMenu() {
         try {
@@ -364,10 +381,11 @@ public class UserInterface {
         scanner.nextLine();
     }
 
-
     private static void clearScreen() {
         System.out.print("\033[H\033[2J");
         System.out.flush();
     }
+
+    //endregion
 
 }
