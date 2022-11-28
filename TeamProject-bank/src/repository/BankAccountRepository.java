@@ -9,7 +9,6 @@ import java.util.Iterator;
 
 public class BankAccountRepository {
 
-
     //싱글톤
     private static BankAccountRepository bankAccountService;
     private BankAccountRepository(){
@@ -21,7 +20,6 @@ public class BankAccountRepository {
         }
         return bankAccountService;
     }
-
 
     private HashMap<String,BankAccount> bankAccountsList;
 
