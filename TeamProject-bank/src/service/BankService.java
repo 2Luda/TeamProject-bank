@@ -98,11 +98,9 @@ public class BankService{
 
     public long addInterest(long amount){
 
-        BigDecimal bankRate = this.interestRate; // 이율
-        long inputAmount  = amount; // 들어온 돈
-        BigDecimal addInterest = bankRate.multiply(BigDecimal.valueOf(inputAmount)); // 기존 들어온 돈을 빅데시멀로 바꾸고, 그 값을 기존에 적용된 돈이랑 더함 => 이율이 적용된 돈
-        long money=addInterest.longValue();
-        return money;
+        return this.interestRate.add(BigDecimal.valueOf(1)) //(1 + 이율)
+                .multiply(BigDecimal.valueOf(amount)) // x 입금금액
+                .longValue(); //long값으로 반환
     }
 
     /**
@@ -118,12 +116,13 @@ public class BankService{
 
             if (bankAccount == null)
                 throw new NoAccountException();
-            long newBankBalance = bankAccount.getBankBalance() + amount; // 기존잔액 + 입금금액
 
-            long money = addInterest(amount)+newBankBalance; // 입금 금액에 따라 이율이 적용된 돈 + 기존에 있는 돈
-            if(money>max_value)
+
+            long newBankBalance = bankAccount.getBankBalance() + addInterest(amount); // 기존잔액 + 입금금액
+
+            if(newBankBalance > max_value)
                 throw new Exception("저축가능한 범위를 넘어섰습니다. 창구에 문의 바랍니다.");
-            this.bankAccountRepository.modifyAccount(BankAccountNumber,money);
+            this.bankAccountRepository.modifyAccount(BankAccountNumber,newBankBalance);
 
             //트렌젝션 기록
             LocalDateTime date = LocalDateTime.now();
