@@ -97,11 +97,11 @@ public class BankService{
     }
 
     public long addInterest(long amount){
+
         BigDecimal bankRate = this.interestRate; // 이율
         long inputAmount  = amount; // 들어온 돈
         BigDecimal addInterest = bankRate.multiply(BigDecimal.valueOf(inputAmount)); // 기존 들어온 돈을 빅데시멀로 바꾸고, 그 값을 기존에 적용된 돈이랑 더함 => 이율이 적용된 돈
         long money=addInterest.longValue();
-
         return inputAmount+money;
     }
 
@@ -143,7 +143,7 @@ public class BankService{
      * @param amount            (int)
      * @param password          (String)
      */
-    public boolean withdrawMoeny(String BankAccountNumber, int amount, String password) {
+    public boolean withdrawMoney(String BankAccountNumber, int amount, String password) {
 
         BankAccount bankAccount = this.bankAccountRepository.searchAccountsByNumber(BankAccountNumber);
 
@@ -152,6 +152,7 @@ public class BankService{
                 throw new NoAccountException();
             if(bankAccount.checkPassword(password) == false)
                 throw new NoAccountException("패스워드가 틀렸습니다.");
+
             if (amount < 0)
                 throw new IllegalRegexExpressionException("양수로 입력해 주세요.");
 
