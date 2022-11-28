@@ -2,6 +2,7 @@ package presentation;
 
 
 import exceptions.IllegalRegexExpressionException;
+import exceptions.NoAccountException;
 import service.BankService;
 import utils.RegEx;
 
@@ -136,23 +137,43 @@ public class UserInterface {
         try {
             System.out.println("======[입금]을 선택하셨습니다======");
             System.out.println("적용될 이율은 다음과 같습니다 =>" + bankService.getInterestRate());
+
+
+            //계화번호 입력
             System.out.print("입금하실 계좌번호를 알려주세요 :  ");
 
             String depositNumber = scanner.nextLine();
             if (!regEx.checkAccountRegEx(depositNumber))
                 throw new IllegalRegexExpressionException("올바른 계좌 형식이 아닙니다.");
 
-            System.out.print("입금하실 금액을 적어주세요 :");
-            String input = scanner.nextLine();
-            int depositBalance = Integer.parseInt(input);
-            if (!regEx.checkNumberRegEx(depositBalance))
-                throw new IllegalRegexExpressionException("올바른 숫자를 입력해주세요");
-            System.out.println("입금 금액은 다음과 같습니다 : " + input);
-            System.out.println("입금 금액에 이자가 적용된 액수는 다음과 같습니다." + bankService.addInterest(depositBalance));
 
-            if (bankService.depositMoney(depositNumber, depositBalance))
-                System.out.print("입금 금액은 다음과 같습니다 : "+bankService.addInterest(depositBalance)+);
-                System.out.println("입금이 완료되었습니다.");
+            //비밀번호 입력
+            System.out.print("비밀번호를 입력해주세요 :");
+            String password = scanner.nextLine();
+
+            if (!regEx.checkPasswordRegEx(password))
+                throw new IllegalRegexExpressionException("올바른 비밀번호 형식이 아닙니다.");
+
+            long currentBalance = bankService.getAccountBalance(depositNumber,password);
+
+            if(currentBalance > 0 ) {
+                System.out.println("현재 잔고는 " + currentBalance + "원 입니다.");
+
+                System.out.print("입금하실 금액을 적어주세요 :");
+                String input = scanner.nextLine();
+                int depositBalance = Integer.parseInt(input); //NumberFormatException 검사
+                if (!regEx.checkNumberRegEx(depositBalance))
+                    throw new IllegalRegexExpressionException("올바른 숫자를 입력해주세요");
+
+
+                System.out.println();
+                System.out.println("입금 금액은 다음과 같습니다 : " + depositBalance);
+                System.out.println("입금 금액에 이자가 적용된 액수는 다음과 같습니다." + bankService.addInterest(depositBalance));
+                System.out.println();
+
+                if (bankService.depositMoney(depositNumber, depositBalance))
+                    System.out.println("입금이 완료되었습니다.");
+            }
 
             System.out.println();
             System.out.println("계속하시려면 아무 키를 입력해주세요");

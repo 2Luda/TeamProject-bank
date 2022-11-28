@@ -115,14 +115,21 @@ public class BankService{
         long max_value = 1000000000;
         try {
             BankAccount bankAccount = this.bankAccountRepository.searchAccountsByNumber(BankAccountNumber);
-            // 기존에 돈  + 들어온 돈
+
             if (bankAccount == null)
                 throw new NoAccountException();
+
             long newBankBalance = bankAccount.getBankBalance() + amount;
+
+
             long money = addInterest(amount)+newBankBalance; // 입금금액에 따라 이율 적용 + 기존에 돈+ 들어온 돈
             if(money>max_value)
                 throw new Exception("저축가능한 범위를 넘어섰습니다. 창구에 문의 바랍니다.");
+
             this.bankAccountRepository.modifyAccount(BankAccountNumber,money);
+
+
+            //트렌젝션 기록
             LocalDateTime date = LocalDateTime.now();
             transactionRepository.addTransaction(
                     this.bankName,
