@@ -4,27 +4,22 @@ import domain.BankAccount;
 import domain.Transaction;
 import repository.BankAccountRepository;
 import repository.TransactionRepository;
-
-
 import exceptions.IllegalRegexExpressionException;
 import exceptions.NoAccountException;
 import exceptions.NotEnoughMoneyException;
-
-
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Iterator;
 
 //은행서비스
-public class BankService {
+public class BankService{
 
     private final String bankName;
     private final int commission;
     private final BigDecimal interestRate;
     private BankAccountRepository bankAccountRepository;
     private TransactionRepository transactionRepository;
-
 
 
     public BankService(String bankName, int commission, BigDecimal interestRate) {
@@ -82,7 +77,6 @@ public class BankService {
 
     /**
      * 계좌 삭제 메소드
-     *
      * @param bankAccountNumber (String)
      */
     public boolean deleteAccount(String bankAccountNumber, String password) {
@@ -110,6 +104,7 @@ public class BankService {
 
         return inputAmount+money;
     }
+
     /**
      * 계좌 입금 메소드
      *
@@ -117,19 +112,18 @@ public class BankService {
      * @param amount            (int)
      */
     public boolean depositMoney(String BankAccountNumber, int amount){
+        long max_value = 1000000000;
         try {
             BankAccount bankAccount = this.bankAccountRepository.searchAccountsByNumber(BankAccountNumber);
-            long newBankBalance = bankAccount.getBankBalance() + amount; // 기존에 돈  + 들어온 돈
-            if (bankAccount == null) // 만약 기존에 들어온 잔고가 null이면 예외 발생
+            // 기존에 돈  + 들어온 돈
+            if (bankAccount == null)
                 throw new NoAccountException();
-            if (amount < 0) // 입금하고자 하는 돈이 0원 이하면 예외 발생
-                throw new IllegalRegexExpressionException("양의 정수로 입력해 주세요.");
-
+            long newBankBalance = bankAccount.getBankBalance() + amount;
             long money = addInterest(amount)+newBankBalance; // 입금금액에 따라 이율 적용 + 기존에 돈+ 들어온 돈
-
+            if(money>max_value)
+                throw new Exception("저축가능한 범위를 넘어섰습니다. 창구에 문의 바랍니다.");
             this.bankAccountRepository.modifyAccount(BankAccountNumber,money);
             LocalDateTime date = LocalDateTime.now();
-
             transactionRepository.addTransaction(
                     this.bankName,
                     BankAccountNumber,
@@ -137,7 +131,7 @@ public class BankService {
                     date);
             return true;
         }
-        catch (Exception e){ //일단은 모든 exception 받기
+        catch (Exception e){
             System.out.println(e.getMessage());
             return false;
         }
@@ -152,8 +146,6 @@ public class BankService {
     public boolean withdrawMoeny(String BankAccountNumber, int amount, String password) {
 
         BankAccount bankAccount = this.bankAccountRepository.searchAccountsByNumber(BankAccountNumber);
-
-
 
         try {
             if (bankAccount == null)
@@ -186,7 +178,6 @@ public class BankService {
     }
 
     // 기능 6. 송금기능
-
     /**
      * 잔액 조회 메소드
      *
@@ -197,12 +188,11 @@ public class BankService {
 
         try {
             BankAccount account = this.bankAccountRepository.searchAccountsByNumber(bankAccountNumber);
-
-
             if (account == null)
                 throw new NoAccountException("계좌가 존재하지 않습니다.");
             if (account.checkPassword(password) == false)
                 throw new NoAccountException("패스워드가 일치하지 않습니다");
+
 
             return account.getBankBalance();
         } catch (NoAccountException e) { //일단은 모든 exception 받기
