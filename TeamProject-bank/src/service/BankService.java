@@ -191,10 +191,11 @@ public class BankService{
 
 
             long newBankBalance = bankAccount.getBankBalance() - amount - this.commission;
-            this.bankAccountRepository.modifyAccount(BankAccountNumber, newBankBalance);
 
             if (newBankBalance < 0)
                 throw new NotEnoughMoneyException();
+
+            this.bankAccountRepository.modifyAccount(BankAccountNumber, newBankBalance);
 
             //잔고 변동시 트렌젝션 기록
             LocalDateTime date = LocalDateTime.now();
