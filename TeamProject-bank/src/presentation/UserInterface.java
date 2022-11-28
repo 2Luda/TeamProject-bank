@@ -2,7 +2,6 @@ package presentation;
 
 
 import exceptions.IllegalRegexExpressionException;
-import exceptions.NoAccountException;
 import service.BankService;
 import utils.RegEx;
 
@@ -36,7 +35,7 @@ public class UserInterface {
 
             switch (menuNum) {
                 case "1":
-                    this.addAcountMenu();
+                    this.addAccountMenu();
                     break;
                 case "2":
                     this.depositMenu();
@@ -67,7 +66,6 @@ public class UserInterface {
             System.out.println(e.getMessage());
         }
         return true;
-
     }
 
     private void MainMenu() {
@@ -84,7 +82,7 @@ public class UserInterface {
         System.out.println(" 9. 나가기");
     }
 
-    private void addAcountMenu() {
+    private void addAccountMenu() {
         try {
             System.out.println("");
             System.out.println("==========[계좌 개설]을 선택하셨습니다==========");
@@ -138,10 +136,8 @@ public class UserInterface {
             System.out.println("======[입금]을 선택하셨습니다======");
             System.out.println("적용될 이율은 다음과 같습니다 =>" + bankService.getInterestRate());
 
-
             //계화번호 입력
             System.out.print("입금하실 계좌번호를 알려주세요 :  ");
-
             String depositNumber = scanner.nextLine();
             if (!regEx.checkAccountRegEx(depositNumber))
                 throw new IllegalRegexExpressionException("올바른 계좌 형식이 아닙니다.");
@@ -158,13 +154,12 @@ public class UserInterface {
 
             if(currentBalance > 0 ) {
                 System.out.println("현재 잔고는 " + currentBalance + "원 입니다.");
-
                 System.out.print("입금하실 금액을 적어주세요 :");
                 String input = scanner.nextLine();
                 int depositBalance = Integer.parseInt(input); //NumberFormatException 검사
+
                 if (!regEx.checkNumberRegEx(depositBalance))
                     throw new IllegalRegexExpressionException("올바른 숫자를 입력해주세요");
-
 
                 System.out.println();
                 System.out.println("입금 금액은 다음과 같습니다 : " + depositBalance);
