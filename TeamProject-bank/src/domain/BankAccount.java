@@ -27,6 +27,7 @@ public class BankAccount {
     public String getBankAccountNumber() {
         return bankAccountNumber;
     }
+
     public long getBankBalance() {
         return bankBalance;
     }
