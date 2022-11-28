@@ -6,7 +6,7 @@ import java.math.BigDecimal;
 public class Main {
     public static void main(String[] args) {
 
-        BankService kbBankService = new BankService("국민은행", 500, BigDecimal.valueOf(0.195));
+        BankService kbBankService = new BankService("국민은행", 500, BigDecimal.valueOf(0.0195));
         initAccount(kbBankService);  //init with test data
         UserInterface UI = new UserInterface(kbBankService);
         while(UI.run());
